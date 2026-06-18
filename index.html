@@ -8,81 +8,94 @@
 </head>
 
 <body>
+
+    <h1>Rock Paper Scissors</h1>
+    <p>First to 5 points wins the game!</p>
+
+    <!-- 1. Clickable Game Buttons -->
+    <button id="rockBtn">Rock</button>
+    <button id="paperBtn">Paper</button>
+    <button id="scissorsBtn">Scissors</button>
+
+    <!-- 2. The Container Div for displaying results directly on the screen -->
+    <div id="gameResults" style="margin-top: 20px; line-height: 1.6;">
+        <p id="roundOutcome">Click a button above to start playing!</p>
+        <p id="scoreBoard">Human: 0 | Computer: 0</p>
+        <h2 id="finalWinner" style="color: green;"></h2>
+    </div>
+
     <script>
+        let humanScore = 0;
+        let computerScore = 0;
+        let gameOver = false; // Tracks if the game has ended
+
         function getComputerChoice() {
             const randomNumber = Math.floor(Math.random() * 3) + 1;
-            if (randomNumber === 1) {
-                return 'rock';
-            } else if (randomNumber === 2) {
-                return 'paper';
-            } else {
-                return 'scissors';
-            }
-
-        };
-        function getHumanChoice() {
-            const choice = prompt("Type your choice (rock, paper, or scissors):");
-            return choice;
+            if (randomNumber === 1) return 'rock';
+            if (randomNumber === 2) return 'paper';
+            return 'scissors';
         };
 
+        // 3. Grab the DOM display text elements
+        const roundOutcomeText = document.querySelector('#roundOutcome');
+        const scoreBoardText = document.querySelector('#scoreBoard');
+        const finalWinnerText = document.querySelector('#finalWinner');
 
-        function playGame() {
-            let humanScore = 0;
-            let computerScore = 0;
+        function playRound(humanChoice, computerChoice) {
+            // If someone already reached 5 points, stop execution entirely
+            if (gameOver) return;
 
-            function playRound(humanChoice, computerChoice) {
+            const human = humanChoice.toLowerCase();
+            const computer = computerChoice;
 
-                if (!humanChoice) {
-                    console.log("You skipped the round! Computer gets a point.");
-                    computerScore++;
-                    return; // This stops the function early so it doesn't crash
-                }
-
-
-                const human = humanChoice.toLowerCase();
-                const computer = computerChoice;
-
-
-                if (human === computer) {
-                    console.log(`It's a tie! Both chose ${human}.`);
-                }
-
-                else if (
-                    (human === "rock" && computer === "scissors") ||
-                    (human === "paper" && computer === "rock") ||
-                    (human === "scissors" && computer === "paper")
-                ) {
-                    humanScore++;
-                    console.log(`You win! ${human} beats ${computer}.`);
-                }
-
-                else {
-                    computerScore++;
-                    console.log(`You lose! ${computer} beats ${human}.`);
-                }
+            // Step A: Determine round winner and update score values
+            if (human === computer) {
+                roundOutcomeText.textContent = `🤝 It's a tie! Both chose ${human}.`;
             }
-
-            console.log("--- GAME STARTED ---");
-            for (let i = 1; i <= 5; i++) {
-                playRound(getHumanChoice(), getComputerChoice());
-            }
-
-            if (humanScore > computerScore) {
-                console.log("You won the game!");
-            }
-            else if (computerScore > humanScore) {
-                console.log("Computer won the game!");
+            else if (
+                (human === "rock" && computer === "scissors") ||
+                (human === "paper" && computer === "rock") ||
+                (human === "scissors" && computer === "paper")
+            ) {
+                humanScore++;
+                roundOutcomeText.textContent = `🎉 You win this round! ${human} beats ${computer}.`;
             }
             else {
-                console.log("The game ended in a tie");
+                computerScore++;
+                roundOutcomeText.textContent = `🤖 You lose this round! ${computer} beats ${human}.`;
+            }
+
+            // Step B: Update the visual scoreboard UI
+            scoreBoardText.textContent = `Human: ${humanScore} | Computer: ${computerScore}`;
+
+            // Step C: Check if a player has reached 5 total points
+            if (humanScore === 5) {
+                finalWinnerText.textContent = "🏆 Congratulations! You won the entire game!";
+                gameOver = true;
+                disableButtons();
+            } else if (computerScore === 5) {
+                finalWinnerText.textContent = "💻 Game Over! The computer won the game.";
+                gameOver = true;
+                disableButtons();
             }
         }
 
-        playGame();
+        // Helper function to stop additional button clicking after the game ends
+        function disableButtons() {
+            rockButton.disabled = true;
+            paperButton.disabled = true;
+            scissorsButton.disabled = true;
+        }
 
+        // 4. Set up button selection and click triggers
+        const rockButton = document.querySelector('#rockBtn');
+        const paperButton = document.querySelector('#paperBtn');
+        const scissorsButton = document.querySelector('#scissorsBtn');
+
+        rockButton.addEventListener('click', () => playRound('rock', getComputerChoice()));
+        paperButton.addEventListener('click', () => playRound('paper', getComputerChoice()));
+        scissorsButton.addEventListener('click', () => playRound('scissors', getComputerChoice()));
     </script>
-
-
 </body>
 
 </html>
